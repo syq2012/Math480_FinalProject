@@ -4,9 +4,10 @@ import cmath
 import matplotlib.pyplot as plt
 import math
 import os
+import sys
 
 
- 
+
 def save(path, ext='png', close=True, verbose=True):
     """Save a figure from pyplot.
  
@@ -103,18 +104,17 @@ def fft(signal):
          combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
       return combined
-   
-#how to run the program     
-b = wavToArray("oboe.wav").tolist()
+
+b = wavToArray(sys.argv[1]).tolist()
 b = padding(b)
 test2 = fft(b)
 test = [0]*10000
 # need to only work with the magnitude - throw way phase. Also rounding in this example due to some random noise that all goes to 0
 for i in range(65536):
-    test2[i] = round(abs(test2[i]))
+	   test2[i] = round(abs(test2[i]))
 ic = [2*math.pi*x for x in range(10000)]
 for i in range(10000):
 	test[i] = test2[i]
-
 plt.plot(ic, test)
-save("signal", ext="svg", close=False, verbose=True)
+save("signal", ext="png", close=False, verbose=True)	
+   
