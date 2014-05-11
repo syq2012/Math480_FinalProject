@@ -17,4 +17,8 @@ Implementation/Process
 
 Initially we were interested in working with Fourier transforms to derive some qualities from an audio clip of a song, such as BPM. However, since we have not done too much with discrete Fourier transforms before, this project was scrapped in favor of the one we have now.
 
-We knew that the Python package [numpy](http://www.numpy.org) already has an extensive implementation of the FFT/DFT, but we felt like that it would 1) be beneficial to our programming skills and 2) add to the mathematical rigor of our project if we implemented an FFT algorithm ourselves. Initially we looked at how other packages like numpy implemented their algorithms. Most use the Cooley-Tukey Fast Fourier Transform algorithm which extremely optimized, however we decided to use a simpler algorithm that we found more understandable that utilizes recursion. As a result, our FFT algorithm is not very fast, but we think that it's more understandable.
+We knew that the Python package [numpy](http://www.numpy.org) already has an extensive implementation of the FFT/DFT, but we felt like that it would 1) be beneficial to our programming skills and 2) add to the mathematical rigor of our project if we implemented an FFT algorithm ourselves. Initially we looked at how other packages like numpy implemented their algorithms. Most use the Cooley-Tukey Fast Fourier Transform algorithm which extremely optimized, however we decided to use a simpler algorithm that we found more understandable that utilizes recursion. As a result, our FFT algorithm is not very fast, but we think that it's more understandable and clearer to someone who has not had much experience with Discrete Fourier Transforms.
+
+(INSERT MATHY STUFF ABOUT FFTS HERE)
+
+Some examples 

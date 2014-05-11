@@ -76,16 +76,17 @@ def wavToArray(fileName):
 def omega(p, q):
    return cmath.exp((2.0 * cmath.pi * 1j * q) / p)
 
+# Since FFT requires 2^n samples, we pad the raw data list with zeroes to get to 2^n
 def padding(signal):
     for x in range(65536-len(signal)):
       signal.append(0)
     return signal
 
-# The actual function
+# The actual FFT function function
 def fft(signal):
    n = len(signal)
     
-   # if the input is only one then we can't really do a fft can we BITCHES
+   # if the input is only one then we can't really do a fft 
     
    if n == 1:
       return signal
@@ -98,20 +99,22 @@ def fft(signal):
       # defining new empty array with n entries
       combined = [0] * n
       
-      # implementation of the alg lmao idk whats going on FUCK
+      # implementation of the alg (using roots of unity)
       for m in xrange(n/2):
          combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
          combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
       return combined
 
+# actually running the program
 b = wavToArray(sys.argv[1]).tolist()
 b = padding(b)
 test2 = fft(b)
+# We only work with the first 10000 samples since larger frequencies won't appear in our sound file - so it's just noise.
 test = [0]*10000
-# need to only work with the magnitude - throw way phase. Also rounding in this example due to some random noise that all goes to 0
-for i in range(65536):
-	   test2[i] = round(abs(test2[i]))
+# need to only work with the magnitude, so we throw away phase. 
+for i in range(10000):
+	   test2[i] = abs(test2[i])
 ic = [2*math.pi*x for x in range(10000)]
 for i in range(10000):
 	test[i] = test2[i]
