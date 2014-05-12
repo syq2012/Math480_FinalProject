@@ -21,7 +21,7 @@ We knew that the Python package [numpy](http://www.numpy.org) already has an ext
 
 The algorithm we implemented is the following piece of code:
 
-'''
+```python
 	# The actual FFT function 
 	def fft(signal):
    		n = len(signal)
@@ -45,7 +45,7 @@ The algorithm we implemented is the following piece of code:
          		combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
 		    return combined
-'''
+```
 
 (INSERT MATHY STUFF ABOUT FFTS HERE) + explanation of the algorithm will be done for final project.
 
@@ -58,9 +58,9 @@ For our example, we will take a 1 second clip of an oboe playing A4 (440 HZ) and
 
 Running it in the terminal (GUI in progress):
 
-'''
+```
 	python finalProj.py oboe.wav
-'''
+```
 
 After about a minute, (will implement in Cython ASAP to reduce computation time), the program outputs an image with the frequencies and their associated relative amplitudes: http://i.imgur.com/t5RDUOS.png
 
