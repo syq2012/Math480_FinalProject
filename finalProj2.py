@@ -4,10 +4,65 @@ import cmath
 import matplotlib.pyplot as plt
 import math
 import os
-import sys
+from Tkinter import *
+import tkFileDialog
+import ntpath
 
+input_file = None
+fund_frequency = None
 
+class Application(Frame):
+    def say_hi(self):
+        print "hi there, everyone!"
 
+    def createWidgets(self):
+        self.QUIT = Button(self)
+        self.QUIT["text"] = "Start!"
+        self.QUIT["fg"]   = "red"
+        self.QUIT["command"] =  self.quit
+
+        self.QUIT.pack({"side": "right"})
+
+        self.hi_there = Button(self)
+        self.hi_there["text"] = "Choose a file",
+        self.hi_there["command"] = self.onOpen
+
+        self.hi_there.pack({"side": "right"})
+
+        self.choose = Button(self)
+        self.choose["text"] = "Choose a frequncy(default is 440)"
+        self.choose["command"] = self.freq
+        self.choose.pack(fill=BOTH, expand = 1)
+
+    def onOpen(self):
+        ftypes = [('Python files', '*.py'), ('All files', '*')]
+        dlg = tkFileDialog.Open(self, filetypes = ftypes)
+        fl = dlg.show()
+        global input_file
+        input_file = fl
+        self.hi_there["text"] = ntpath.basename(fl)
+    def freq(self):
+        self.frequency = Entry(self)
+        self.frequency.pack(side = BOTTOM)
+        self.choose["text"] = "Use this frequency"
+        self.choose["command"] = self.getf
+        
+    def getf(self):
+        global fund_frequency
+        fund_frequency = self.frequency.get()
+
+    def __init__(self, master=None, background="white"):
+        Frame.__init__(self, master, background="white")
+        self.pack()
+        self.createWidgets()
+
+root = Tk()
+app = Application(root)
+root.geometry("300x150+300+300")
+fl = app.mainloop()
+root.destroy()
+print input_file
+ 
 def save(path, ext='png', close=True, verbose=True):
     """Save a figure from pyplot.
  
@@ -62,6 +117,17 @@ def save(path, ext='png', close=True, verbose=True):
 
 # function to get wave to array data
 def wavToArray(fileName):
+	"""Convert wav file to array of amplitude
+	Parameter
+	---------
+	fileName : String
+	    The input wav file to read in
+	    require to be mono 
+	Return
+	------
+	an array of float that represents the amplitude 
+	of each frame from the given file
+	"""
     reader = wave.open(fileName, 'rb')
     nchannels, sampwidth, framerate, nframes, comptype, compname = reader.getparams()[:6]
     # assume chanel is 1
@@ -76,17 +142,25 @@ def wavToArray(fileName):
 def omega(p, q):
    return cmath.exp((2.0 * cmath.pi * 1j * q) / p)
 
-# Since FFT requires 2^n samples, we pad the raw data list with zeroes to get to 2^n
 def padding(signal):
     for x in range(65536-len(signal)):
       signal.append(0)
     return signal
-
-# The actual FFT function function
+def noise_cancelling(test, fund_freq):
+    freq = int(fund_freq * 2 * math.pi)
+    pure_result = {}
+    for i in range(1,4):
+        Max = 0
+        for j in range(freq-10 , freq+10):
+            data = test[j]
+            Max = max(data, Max)
+        pure_result[i*freq] = Max
+    return pure_result
+# The actual function
 def fft(signal):
    n = len(signal)
     
-   # if the input is only one sample then we can't really do a fft 
+   # if the input is only one then we can't really do a fft can we BITCHES
     
    if n == 1:
       return signal
@@ -99,25 +173,28 @@ def fft(signal):
       # defining new empty array with n entries
       combined = [0] * n
       
-      # implementation of the alg (using roots of unity)
+      # implementation of the alg lmao idk whats going on FUCK
       for m in xrange(n/2):
          combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
          combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
       return combined
-
-# actually running the program
-b = wavToArray(sys.argv[1]).tolist()
+   
+#how to run the program     
+b = wavToArray(input_file).tolist()
 b = padding(b)
 test2 = fft(b)
-# We only work with the first 10000 samples since larger frequencies won't appear in our sound file - so it's just noise.
 test = [0]*10000
-# need to only work with the magnitude, so we throw away phase. 
-for i in range(10000):
-	   test2[i] = abs(test2[i])
-ic = [2*math.pi*x for x in range(10000)]
+# need to only work with the magnitude - throw way phase. Also rounding in this example due to some random noise that all goes to 0
+for i in range(65536):
+    test2[i] = round(abs(test2[i]))
+ic = [x*math.pi for x in range(10000)]
 for i in range(10000):
 	test[i] = test2[i]
+print(noise_cancelling(test,440))
+#for i in range(len(ic)):
+    #if test[i] >= 10**7:
+       # print ic[i]
+print fund_frequency
 plt.plot(ic, test)
-save("signal", ext="png", close=False, verbose=True)	
-   
+save("signal", ext="png", close=False, verbose=True)
