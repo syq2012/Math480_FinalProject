@@ -83,18 +83,20 @@
 
 <p>For our example, we will take a 1 second clip of an oboe playing A4 (440 HZ) and run it through our algorithm. Here is the original sample:</p>
 
-
+<iframe width="100%" height="450" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/148930101&amp;auto_play=false&amp;hide_related=false&amp;visual=true"></iframe>
 
 <p>Running it in the terminal (GUI in progress):</p>
 
 <pre><code>    python finalProj.py oboe.wav
 </code></pre>
 
-<p>After about a minute, (will implement in Cython ASAP to reduce computation time), the program outputs an image with the frequencies and their associated relative amplitudes: <a href="http://i.imgur.com/t5RDUOS.png">http://i.imgur.com/t5RDUOS.png</a></p>
+<p>After about a minute, (will implement in Cython ASAP to reduce computation time), the program outputs an image with the frequencies and their associated relative amplitudes: <img src="http://i.imgur.com/t5RDUOS.png"></p>
 
-<p>One interesting thing that we can do is actually try to reconstruct the sound of the oboe using the information given above using Audacity by adding up a bunch of sine waves with the appropriate frequencies and amplitudes: <a href="http://i.imgur.com/qgpheYg.png">http://i.imgur.com/qgpheYg.png</a></p>
+<p>One interesting thing that we can do is actually try to reconstruct the sound of the oboe using the information given above using Audacity by adding up a bunch of sine waves with the appropriate frequencies and amplitudes: <img src="http://i.imgur.com/qgpheYg.png"></p>
 
 <p>What we get is a sound that is extremely close to the original file:</p>
+
+<iframe width="100%" height="150" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/149097287&amp;auto_play=false&amp;hide_related=false&amp;visual=true"></iframe>
 
 
 
