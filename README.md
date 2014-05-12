@@ -22,29 +22,29 @@ We knew that the Python package [numpy](http://www.numpy.org) already has an ext
 The algorithm we implemented is the following piece of code:
 
 '''
-# The actual FFT function 
-def fft(signal):
-   n = len(signal)
+	# The actual FFT function 
+	def fft(signal):
+   		n = len(signal)
     
-   # if the input is only one sample then we can't really do a fft 
+   		# if the input is only one sample then we can't really do a fft 
     
-   if n == 1:
-      return signal
+   		if n == 1:
+    	  	return signal
     
-   else:
-      # breaking up into odd and even pieces
-      F_even = fft([signal[i] for i in xrange(0, n, 2)])
-      F_odd = fft([signal[i] for i in xrange(1, n, 2)])
+   		else:
+      		# breaking up into odd and even pieces
+      		F_even = fft([signal[i] for i in xrange(0, n, 2)])
+      		F_odd = fft([signal[i] for i in xrange(1, n, 2)])
         
-      # defining new empty array with n entries
-      combined = [0] * n
+      		# defining new empty array with n entries
+      		combined = [0] * n
       
-      # implementation of the alg (using roots of unity)
-      for m in xrange(n/2):
-         combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
-         combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
+     		# implementation of the alg (using roots of unity)
+      			for m in xrange(n/2):
+         		combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
+         		combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
-      return combined
+		    return combined
 '''
 
 (INSERT MATHY STUFF ABOUT FFTS HERE) + explanation of the algorithm will be done for final project.
@@ -59,7 +59,7 @@ For our example, we will take a 1 second clip of an oboe playing A4 (440 HZ) and
 Running it in the terminal (GUI in progress):
 
 '''
-python finalProj.py oboe.wav
+	python finalProj.py oboe.wav
 '''
 
 After about a minute, (will implement in Cython ASAP to reduce computation time), the program outputs an image with the frequencies and their associated relative amplitudes: http://i.imgur.com/t5RDUOS.png
