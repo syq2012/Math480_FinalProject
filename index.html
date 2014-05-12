@@ -49,14 +49,52 @@
 
 <p>We knew that the Python package <a href="http://www.numpy.org">numpy</a> already has an extensive implementation of the FFT/DFT, but we felt like that it would 1) be beneficial to our programming skills and 2) add to the mathematical rigor of our project if we implemented an FFT algorithm ourselves. Initially we looked at how other packages like numpy implemented their algorithms. Most use the Cooley-Tukey Fast Fourier Transform algorithm which is extremely optimized, however we decided to use a simpler algorithm that we found more understandable that utilizes recursion. As a result, our FFT algorithm is not very fast, but we think that it's more understandable and clearer to someone who has not had much experience with Discrete Fourier Transforms.</p>
 
-<p>The algorithm we are are using is this piece of code</p>
+<p>The algorithm we implemented is the following piece of code:</p>
 
-<p>(INSERT MATHY STUFF ABOUT FFTS HERE)</p>
+<div class="highlight highlight-python"><pre>    <span class="c"># The actual FFT function </span>
+    <span class="k">def</span> <span class="nf">fft</span><span class="p">(</span><span class="n">signal</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+
+        <span class="c"># if the input is only one sample then we can't really do a fft </span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">signal</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c"># breaking up into odd and even pieces</span>
+            <span class="n">F_even</span> <span class="o">=</span> <span class="n">fft</span><span class="p">([</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+            <span class="n">F_odd</span> <span class="o">=</span> <span class="n">fft</span><span class="p">([</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+
+            <span class="c"># defining new empty array with n entries</span>
+            <span class="n">combined</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">n</span>
+
+            <span class="c"># implementation of the alg (using roots of unity)</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
+                <span class="n">combined</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_even</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">+</span> <span class="n">omega</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">F_odd</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+                <span class="n">combined</span><span class="p">[</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="o">/</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">F_even</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">-</span> <span class="n">omega</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="o">-</span><span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="n">F_odd</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">combined</span>
+</pre></div>
+
+<p>(INSERT MATHY STUFF ABOUT FFTS HERE) + explanation of the algorithm will be done for final project.</p>
 
 <h2>
-<a name="examples" class="anchor" href="#examples"><span class="octicon octicon-link"></span></a>Examples</h2>
+<a name="example" class="anchor" href="#example"><span class="octicon octicon-link"></span></a>Example</h2>
 
-<iframe width="100%" height="150" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/148930101&amp;auto_play=false&amp;hide_related=false&amp;visual=true"></iframe>
+<p>For our example, we will take a 1 second clip of an oboe playing A4 (440 HZ) and run it through our algorithm. Here is the original sample:</p>
+
+
+
+<p>Running it in the terminal (GUI in progress):</p>
+
+<pre><code>    python finalProj.py oboe.wav
+</code></pre>
+
+<p>After about a minute, (will implement in Cython ASAP to reduce computation time), the program outputs an image with the frequencies and their associated relative amplitudes: <a href="http://i.imgur.com/t5RDUOS.png">http://i.imgur.com/t5RDUOS.png</a></p>
+
+<p>One interesting thing that we can do is actually try to reconstruct the sound of the oboe using the information given above using Audacity by adding up a bunch of sine waves with the appropriate frequencies and amplitudes: <a href="http://i.imgur.com/qgpheYg.png">http://i.imgur.com/qgpheYg.png</a></p>
+
+<p>What we get is a sound that is extremely close to the original file:</p>
 
 
 
@@ -65,7 +103,7 @@
 
 <p>We are currently working on adding a GUI or some sort of interface so that people can take their own sounds and choose sampling rate/number of samples to get their own plots. Other small things on our to-do list include adding docstrings to our functions, as well as rewriting the FFT portion of our code in Cython to get a speedup and remove the bottleneck in our program.</p>
 
-<p>Possible directions we have been thinking of include some sort of synthesizer where people can blend sounds of different instruments, automatic reconstruction of the sound in Audacity, and </p>
+<p>Possible directions we have been thinking of include some sort of synthesizer where people can blend sounds of different instruments and automatic reconstruction of the sound in Audacity.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/bryantwong">bryantwong</a></p>
