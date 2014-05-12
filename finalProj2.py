@@ -117,6 +117,17 @@ def save(path, ext='png', close=True, verbose=True):
 
 # function to get wave to array data
 def wavToArray(fileName):
+	"""Convert wav file to array of amplitude
+	Parameter
+	---------
+	fileName : String
+	    The input wav file to read in
+	    require to be mono 
+	Return
+	------
+	an array of float that represents the amplitude 
+	of each frame from the given file
+	"""
     reader = wave.open(fileName, 'rb')
     nchannels, sampwidth, framerate, nframes, comptype, compname = reader.getparams()[:6]
     # assume chanel is 1
