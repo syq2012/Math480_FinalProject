@@ -158,6 +158,17 @@ def noise_cancelling(test, fund_freq):
     return pure_result
 # The actual function
 def fft(signal):
+    """ This is the actual FFT function
+   	Parameter
+   	---------
+   	An array of amplitude with certain length
+   	the array holds amplitude of each frame
+   	require: the length of array is 2^n 
+   	
+   	Return
+   	------
+   	a list of amplitude after fft
+   """
    n = len(signal)
     
    # if the input is only one then we can't really do a fft can we BITCHES
