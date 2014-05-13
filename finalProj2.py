@@ -117,18 +117,18 @@ def save(path, ext='png', close=True, verbose=True):
 
 # function to get wave to array data
 def wavToArray(fileName):
-	"""Convert wav file to array of amplitude
-	Parameter
-	---------
-	fileName : String
-	    The input wav file to read in
-	    require to be mono 
-	Return
-	------
-	an array of float that represents the amplitude 
-	of each frame from the given file
-	"""
-    reader = wave.open(fileName, 'rb')
+    """Convert wav file to array of amplitude
+    Parameter
+    ---------
+    fileName : String
+        The input wav file to read in
+        require to be mono 
+    Return
+    ------
+    an array of float that represents the amplitude 
+    of each frame from the given file
+    """
+    reader = wave.open(fileName,'rb')
     nchannels, sampwidth, framerate, nframes, comptype, compname = reader.getparams()[:6]
     # assume chanel is 1
     time = framerate/nframes  #number of seconds in the file
@@ -159,37 +159,37 @@ def noise_cancelling(test, fund_freq):
 # The actual function
 def fft(signal):
     """ This is the actual FFT function
-   	Parameter
-   	---------
-   	An array of amplitude with certain length
-   	the array holds amplitude of each frame
-   	require: the length of array is 2^n 
+    Parameter
+    ---------
+    An array of amplitude with certain length
+    the array holds amplitude of each frame
+    require: the length of array is 2^n 
    	
-   	Return
-   	------
-   	a list of amplitude after fft
-   """
-   n = len(signal)
+    Return
+    ------
+    a list of amplitude after fft
+    """
+    n = len(signal)
     
    # if the input is only one then we can't really do a fft can we BITCHES
     
-   if n == 1:
-      return signal
+    if n == 1:
+        return signal
     
-   else:
+    else:
       # breaking up into odd and even pieces
-      F_even = fft([signal[i] for i in xrange(0, n, 2)])
-      F_odd = fft([signal[i] for i in xrange(1, n, 2)])
+        F_even = fft([signal[i] for i in xrange(0, n, 2)])
+        F_odd = fft([signal[i] for i in xrange(1, n, 2)])
         
       # defining new empty array with n entries
-      combined = [0] * n
+        combined = [0] * n
       
       # implementation of the alg lmao idk whats going on FUCK
-      for m in xrange(n/2):
-         combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
-         combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
+        for m in xrange(n/2):
+            combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
+            combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
-      return combined
+        return combined
    
 #how to run the program     
 b = wavToArray(input_file).tolist()
