@@ -1,5 +1,7 @@
 
 import numpy as np
+from PIL import ImageTk
+import PIL.Image
 import wave
 import cmath
 import matplotlib.pyplot as plt
@@ -8,79 +10,14 @@ import os
 from Tkinter import *
 import tkFileDialog
 import ntpath
+import tkFont
 
-fields = ('frequency', 'input_name')
+
+fields = ('frequency', 'input_name', 'output_name')
 entries = {}
 input_name = " "
+output_name = " "
 frequency = 0
-def get_freq(entries):
-   global frequency
-   # get frequency:
-   frequency = float(entries['frequency'].get())
-
-def makeform(root, fields):
-   for field in fields:
-      row = Frame(root)
-      lab = Label(row, width=22, text=field+": ", anchor='w')
-      ent = Entry(row)
-      row.pack(side=TOP, fill=X, padx=5, pady=5)
-      lab.pack(side=LEFT)
-      ent.pack(side=RIGHT, expand=YES, fill=X)
-      entries[field] = ent
-   entries['frequency'].insert(0, "440")
-   entries['input_name'].insert(0, "*.wav")
-   return entries
-def save(path, ext='png', close=True, verbose=True):
-    """Save a figure from pyplot.
- 
-    Parameters
-    ----------
-    path : string
-        The path (and filename, without the extension) to save the
-        figure to.
- 
-    ext : string (default='png')
-        The file extension. This must be supported by the active
-        matplotlib backend (see matplotlib.backends module).  Most
-        backends support 'png', 'pdf', 'ps', 'eps', and 'svg'.
- 
-    close : boolean (default=True)
-        Whether to close the figure after saving.  If you want to save
-        the figure multiple times (e.g., to multiple formats), you
-        should NOT close it in between saves or you will have to
-        re-plot it.
- 
-    verbose : boolean (default=True)
-        Whether to print information about when and where the image
-        has been saved.
- 
-    """
-    
-    # Extract the directory and filename from the given path
-    directory = os.path.split(path)[0]
-    filename = "%s.%s" % (os.path.split(path)[1], ext)
-    if directory == '':
-        directory = '.'
- 
-    # If the directory does not exist, create it
-    if not os.path.exists(directory):
-        os.makedirs(directory)
- 
-    # The final path to save to
-    savepath = os.path.join(directory, filename)
- 
-    if verbose:
-        print("Saving figure to '%s'..." % savepath),
- 
-    # Actually save the figure
-    plt.savefig(savepath)
-    
-    # Close it
-    if close:
-        plt.close()
- 
-    if verbose:
-        print("Done")
 
 # function to get wave to array data
 def wavToArray(fileName):
@@ -157,8 +94,92 @@ def fft(signal):
             combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
         return combined
+
+def save(path, ext='png', close=True, verbose=True):
+    """Save a figure from pyplot.
+ 
+    Parameters
+    ----------
+    path : string
+        The path (and filename, without the extension) to save the
+        figure to.
+ 
+    ext : string (default='png')
+        The file extension. This must be supported by the active
+        matplotlib backend (see matplotlib.backends module).  Most
+        backends support 'png', 'pdf', 'ps', 'eps', and 'svg'.
+ 
+    close : boolean (default=True)
+        Whether to close the figure after saving.  If you want to save
+        the figure multiple times (e.g., to multiple formats), you
+        should NOT close it in between saves or you will have to
+        re-plot it.
+ 
+    verbose : boolean (default=True)
+        Whether to print information about when and where the image
+        has been saved.
+ 
+    """
+    
+    # Extract the directory and filename from the given path
+    directory = os.path.split(path)[0]
+    filename = "%s.%s" % (os.path.split(path)[1], ext)
+    if directory == '':
+        directory = '.'
+ 
+    # If the directory does not exist, create it
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+ 
+    # The final path to save to
+    savepath = os.path.join(directory, filename)
+ 
+    if verbose:
+        print("Saving figure to '%s'..." % savepath),
+ 
+    # Actually save the figure
+    plt.savefig(savepath)
+    
+    # Close it
+    if close:
+        plt.close()
+ 
+    if verbose:
+        print("Done")
+
+def get_input(entries):
+   """
+   get the user input and store it into global variable
+   """
+   global frequency
+   # get frequency:
+   frequency = float(entries['frequency'].get())
+   global output_name
+   output_name = entries['output_name'].get()
+
+def makeform(root, fields):
+    """
+    create the log window to get user input of
+    frequency, input file and output file name 
+    """
+   for field in fields:
+      row = Frame(root)
+      lab = Label(row, width=22, text=field+": ", anchor='w')
+      ent = Entry(row)
+      row.pack(side=TOP, fill=X, padx=5, pady=5)
+      lab.pack(side=LEFT)
+      ent.pack(side=RIGHT, expand=YES, fill=X)
+      entries[field] = ent
+   entries['frequency'].insert(0, "440")
+   entries['input_name'].insert(0, "*.wav")
+   entries['output_name'].insert(0, "**")
+   return entries
+
 def run():
-   get_freq(entries)
+   """ 
+   run the main program and save the output graph 
+   """
+   get_input(entries)
    b = wavToArray(input_name).tolist()
    b = padding(b)
    test2 = fft(b)
@@ -175,9 +196,12 @@ def run():
           # print ic[i]
    print frequency
    plt.plot(ic, test)
-   save("signal", ext="png", close=False, verbose=True)
+   save(output_name, ext="png", close=False, verbose=True)
+   w.pack()
 
 def onOpen():
+      """ open the file with given file name
+      """
       ftypes = [('wav files', '*.wav'), ('All files', '*')]
       dlg = tkFileDialog.Open(root, filetypes = ftypes)
       fl = dlg.show()
@@ -190,15 +214,27 @@ def onOpen():
 
 if __name__ == '__main__':
    root = Tk()
-   root.geometry("500x400+300+300")
-   root.minsize(400, 400)
+   root.title("FFT ")
+   root.geometry("600x650+300+300")
+   root.minsize(600, 650)
    ents = makeform(root, fields)
    root.bind('<Return>', (lambda event, e=ents: fetch(e)))   
    b1 = Button(root, text="choose input file", command=onOpen)
-   b1.pack(side=LEFT, padx=5, pady=5)
+  
+   b1.pack(side=TOP, padx=5, pady=5)
    b2 = Button(root, text='start',
           command=run)
-   b2.pack(side=LEFT, padx=5, pady=5)
+   
+   b2.pack(side=TOP, padx=5, pady=5)
    b3 = Button(root, text='Quit', command=root.quit)
-   b3.pack(side=LEFT, padx=5, pady=5)
+   b3.pack(side=TOP, padx=5, pady=5)
+   
+   imgFile = 'signal.png'
+   image = PIL.Image.open(imgFile)
+   image = image = image.resize((600, 400), PIL.Image.ANTIALIAS)
+   image1 = ImageTk.PhotoImage(image)
+   panel = Label(root, image = image1)
+   panel.pack()
+   w = Label(root, text="output image", pady=10)
+   w.pack()
    root.mainloop()
