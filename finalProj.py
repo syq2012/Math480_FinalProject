@@ -106,18 +106,14 @@ def fft(signal):
  
       return combined
 
-# actually running the program
-b = wavToArray(sys.argv[1]).tolist()
-b = padding(b)
-test2 = fft(b)
-# We only work with the first 10000 samples since larger frequencies won't appear in our sound file - so it's just noise.
-test = [0]*10000
-# need to only work with the magnitude, so we throw away phase. 
-for i in range(10000):
-	   test2[i] = abs(test2[i])
-ic = [2*math.pi*x for x in range(10000)]
-for i in range(10000):
-	test[i] = test2[i]
-plt.plot(ic, test)
-save("signal", ext="png", close=False, verbose=True)	
+def noise_cancelling(test, fund_freq):
+    freq = int(fund_freq * 2 * math.pi)
+    pure_result = {}
+    for i in range(1,4):
+        Max = 0
+        for j in range(freq-10 , freq+10):
+            data = test[j]
+            Max = max(data, Max)
+        pure_result[i*freq] = Max
+    return pure_result
    
