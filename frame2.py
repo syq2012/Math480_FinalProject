@@ -118,10 +118,10 @@ if __name__ == '__main__':
    b1.pack(side=TOP, anchor = N, padx=5, pady=5)
    b2 = Button(root, text='start',
           command=run)
-   
    b2.pack(side=TOP, anchor = N, padx=5, pady=5)
    b3 = Button(root, text='Quit', command=root.quit)
    b3.pack(side=TOP, anchor = N, padx=5, pady=5)
+   
    imgFile = 'signal.png'
    image = PIL.Image.open(imgFile)
    image = image = image.resize((600, 400), PIL.Image.ANTIALIAS)

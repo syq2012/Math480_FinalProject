@@ -84,6 +84,12 @@ def padding(signal):
 
 # The actual FFT function function
 def fft(signal):
+   '''
+    //    //    ////    //      ////
+     // //    //  //   //     //  //
+      //     //  //   //     //  //
+     //      ////    /////   ////
+   `'''
    n = len(signal)
     
    # if the input is only one sample then we can't really do a fft 
