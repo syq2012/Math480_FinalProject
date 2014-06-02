@@ -10,59 +10,91 @@ import ntpath
 
 input_file = None
 fund_frequency = None
+output_file = None
 
 class Application(Frame):
-    def say_hi(self):
-        print "hi there, everyone!"
+
 
     def createWidgets(self):
-        self.QUIT = Button(self)
-        self.QUIT["text"] = "Start!"
-        self.QUIT["fg"]   = "red"
-        self.QUIT["command"] =  self.quit
-
-        self.QUIT.pack({"side": "right"})
-
-        self.hi_there = Button(self)
-        self.hi_there["text"] = "Choose a file",
-        self.hi_there["command"] = self.onOpen
-
-        self.hi_there.pack({"side": "right"})
-
-        self.choose = Button(self)
-        self.choose["text"] = "Choose a frequncy(default is 440)"
-        self.choose["command"] = self.freq
-        self.choose.pack(fill=BOTH, expand = 1)
-
+        self.input = Label(self,text="Input File")
+        self.input.grid(row=0,column=0)
+        self.inputbox = Entry(self)
+        self.inputbox.grid(row=0, column=1)
+        self.inputbutton = Button(self)
+        self.inputbutton.grid(row=0,column=2)
+        self.inputbutton["command"] = self.onOpen
+        self.inputbutton["text"]="choose"
+        self.freq = Label(self,text="Frequency")
+        self.freq.grid(row=1,column = 0)
+        self.freqbox = Entry(self)
+        self.freqbox.grid(row=1,column=1)
+        #self.freqchoose = Button(self,text="Use it")
+        #self.freqchoose.grid(row=1, column =2)
+        #self.freqchoose["command"] = self.getf
+        self.outdir = Label(self,text="Output location")
+        self.outdir.grid(row=2, column=0)
+        self.outdir_box = Entry(self)
+        self.outdir_box.grid(row=2, column=1)
+        self.outdir_button = Button(self,command = self.choose_dir, text ="choose")
+        self.outdir_button.grid(row=2,column=2)
+        self.outname = Label(self,text="Output filename")
+        self.outname.grid(row=3,column=0)
+        self.outname_box = Entry(self)
+        self.outname_box.grid(row=3, column=1)
+        self.save = Button(self,comman = self.save, text = "save")
+        self.save.grid(row=4, column=0)
+        self.start = Button(self, command = self.quit, text = "Start!")
+        
+    def choose_dir(self):
+        dir_0 = tkFileDialog.askdirectory()
+        self.outdir_box.delete(0,END)
+        self.outdir_box.insert(0,dir_0)
+        
     def onOpen(self):
-        ftypes = [('Python files', '*.py'), ('All files', '*')]
+        ftypes = [('Sound files', '*.wav'), ('All files', '*')]
         dlg = tkFileDialog.Open(self, filetypes = ftypes)
         fl = dlg.show()
+        self.inputbox.delete(0,END)
+        self.inputbox.insert(0, fl)
+        
+    def save(self):
         global input_file
-        input_file = fl
-        self.hi_there["text"] = ntpath.basename(fl)
-    def freq(self):
-        self.frequency = Entry(self)
-        self.frequency.pack(side = BOTTOM)
-        self.choose["text"] = "Use this frequency"
-        self.choose["command"] = self.getf
+        input_file = self.inputbox.get()
+        global fund_frequency
+        fund_frequency = self.freqbox.get()
+        global output_file
+        output_file = self.outdir_box.get() + '\\' + self.outname_box.get()
+        self.start.grid(row=4, column=1)
         
     def getf(self):
         global fund_frequency
         fund_frequency = self.frequency.get()
 
-    def __init__(self, master=None, background="white"):
-        Frame.__init__(self, master, background="white")
-        self.pack()
+    def __init__(self, master=None):
+        Frame.__init__(self, master)
+        self.grid()
         self.createWidgets()
 
+'''class ShowImage(Frame):
+    def __init__(self,master=None):
+        Frame.__init__(self,master)
+        self.grid()
+        self.showImage()
+    def showImage(self):
+        fileName = output_file + '.png'
+        im = Image.open(fileName).convert2byte()
+        tkimage = ImageTk.PhotoImage(im)
+        self.image = Label(self,image=tkimage)
+        self.image.grid()
+'''
+    
 root = Tk()
 app = Application(root)
-root.geometry("300x150+300+300")
+root.geometry("300x300+200+200")
 fl = app.mainloop()
 root.destroy()
 print input_file
- 
+
 def save(path, ext='png', close=True, verbose=True):
     """Save a figure from pyplot.
  
@@ -117,18 +149,7 @@ def save(path, ext='png', close=True, verbose=True):
 
 # function to get wave to array data
 def wavToArray(fileName):
-    """Convert wav file to array of amplitude
-    Parameter
-    ---------
-    fileName : String
-        The input wav file to read in
-        require to be mono 
-    Return
-    ------
-    an array of float that represents the amplitude 
-    of each frame from the given file
-    """
-    reader = wave.open(fileName,'rb')
+    reader = wave.open(fileName, 'rb')
     nchannels, sampwidth, framerate, nframes, comptype, compname = reader.getparams()[:6]
     # assume chanel is 1
     time = framerate/nframes  #number of seconds in the file
@@ -158,39 +179,28 @@ def noise_cancelling(test, fund_freq):
     return pure_result
 # The actual function
 def fft(signal):
-    """ This is the actual FFT function
-    Parameter
-    ---------
-    An array of amplitude with certain length
-    the array holds amplitude of each frame
-    require: the length of array is 2^n 
-   	
-    Return
-    ------
-    a list of amplitude after fft
-    """
-    n = len(signal)
+   n = len(signal)
     
    # if the input is only one then we can't really do a fft can we BITCHES
     
-    if n == 1:
-        return signal
+   if n == 1:
+      return signal
     
-    else:
+   else:
       # breaking up into odd and even pieces
-        F_even = fft([signal[i] for i in xrange(0, n, 2)])
-        F_odd = fft([signal[i] for i in xrange(1, n, 2)])
+      F_even = fft([signal[i] for i in xrange(0, n, 2)])
+      F_odd = fft([signal[i] for i in xrange(1, n, 2)])
         
       # defining new empty array with n entries
-        combined = [0] * n
+      combined = [0] * n
       
       # implementation of the alg lmao idk whats going on FUCK
-        for m in xrange(n/2):
-            combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
-            combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
+      for m in xrange(n/2):
+         combined[m] = F_even[m] + omega(n, -m) * F_odd[m]
+         combined[m + n/2] = F_even[m] - omega(n, -m) * F_odd[m]
  
-        return combined
-   
+      return combined
+  
 #how to run the program     
 b = wavToArray(input_file).tolist()
 b = padding(b)
@@ -201,11 +211,17 @@ for i in range(65536):
     test2[i] = round(abs(test2[i]))
 ic = [x*math.pi for x in range(10000)]
 for i in range(10000):
-	test[i] = test2[i]
+    test[i] = test2[i]
 print(noise_cancelling(test,440))
 #for i in range(len(ic)):
-    #if test[i] >= 10**7:
-       # print ic[i]
+#if test[i] >= 10**7:
+# print ic[i]
 print fund_frequency
 plt.plot(ic, test)
-save("signal", ext="png", close=False, verbose=True)
+save(output_file, ext="png", close=False, verbose=True)
+'''root = Tk()
+img = ShowImage(root)
+root.geometry("300x300+200+200")
+fl = img.mainloop()
+root.destroy()'''
+
